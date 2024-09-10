@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="/new/styles/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Add Product</h1>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="list.html" onclick="closeMenu()">View Grocery</a></li>
+                <li><a href="add_product.html" onclick="closeMenu()">Add Product</a></li>
+                <li><a href="reglog.html" onclick="closeMenu()">Logout</a></li>
+            </ul>
+        </nav>
+        
+    </header>
+    <main>
+        <form id="grocery-form" enctype="multipart/form-data" onsubmit="addProduct(event)">
+            <div>
+                <input type="text" id="item-name" name="item-name" placeholder="Product Name" required>
+            </div>
+            <div>
+                <input type="text" id="item-brand" name="item-brand" placeholder="Brand" required>
+            </div>
+            <div>
+                <input type="number" id="item-price" name="item-price" placeholder="Price (₱)" step="0.01" required>
+            </div>
+            <div>
+                <input type="text" id="item-weight" name="item-weight" placeholder="Weight/Volume" required>
+            </div>
+            <div>
+                <input type="number" id="item-quantity" name="item-quantity" placeholder="Quantity" required>
+            </div>
+            <div>
+                <input type="text" id="item-store" name="item-store" placeholder="Store" required>
+            </div>
+            <div>
+                <label for="item-category">Category:</label>
+                <select id="item-category" name="item-category" required>
+                    <option value="">Select Category</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Canned goods">Canned goods</option>
+                    <option value="Crackers">Crackers</option>
+                </select>
+            </div>
+            <div>
+                <input type="file" id="item-image" name="item-image" accept="image/*" required>
+            </div>
+            <button type="submit">Add Item</button>
+        </form>
+    </main>
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('show');
+        }
+
+        function addProduct(event) {
+            event.preventDefault();
+            const name = document.getElementById('item-name').value;
+            const brand = document.getElementById('item-brand').value;
+            const price = document.getElementById('item-price').value;
+            const weight = document.getElementById('item-weight').value;
+            const quantity = document.getElementById('item-quantity').value;
+            const store = document.getElementById('item-store').value;
+            const category = document.getElementById('item-category').value;
+            const image = document.getElementById('item-image').files[0];
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imageData = e.target.result;
+                const product = {
+                    id: Date.now(),
+                    name,
+                    brand,
+                    price,
+                    weight,
+                    quantity,
+                    store,
+                    category,
+                    image: imageData
+                };
+
+                let products = JSON.parse(localStorage.getItem('products')) || [];
+                products.push(product);
+                localStorage.setItem('products', JSON.stringify(products));
+
+                alert('Product added successfully!');
+                document.getElementById('grocery-form').reset();
+            };
+            reader.readAsDataURL(image);
+        }
+    </script>
+</body>
+</html>

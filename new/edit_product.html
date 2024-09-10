@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="/new/styles/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Edit Product</h1>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <nav id="nav-menu">
+    <ul>
+        <li><a href="list.html" onclick="closeMenu()">View Grocery</a></li>
+        <li><a href="add_product.html" onclick="closeMenu()">Add Product</a></li>
+        <li><a href="reglog.html" onclick="closeMenu()">Logout</a></li>
+    </ul>
+</nav>
+
+    </header>
+    <main>
+        <form id="edit-form" enctype="multipart/form-data" onsubmit="saveProduct(event)">
+            <input type="hidden" id="product-id">
+            <div>
+                <input type="text" id="edit-item-name" name="item-name" placeholder="Product Name" required>
+            </div>
+            <div>
+                <input type="text" id="edit-item-brand" name="item-brand" placeholder="Brand" required>
+            </div>
+            <div>
+                <input type="number" id="edit-item-price" name="item-price" placeholder="Price (₱)" step="0.01" required>
+            </div>
+            <div>
+                <input type="text" id="edit-item-weight" name="item-weight" placeholder="Weight/Volume" required>
+            </div>
+            <div>
+                <input type="number" id="edit-item-quantity" name="item-quantity" placeholder="Quantity" required>
+            </div>
+            <div>
+                <input type="text" id="edit-item-store" name="item-store" placeholder="Store" required>
+            </div>
+            <div>
+                <label for="edit-item-category">Category:</label>
+                <select id="edit-item-category" name="item-category" required>
+                    <option value="">Select Category</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Canned goods">Canned goods</option>
+                    <option value="Crackers">Crackers</option>
+                </select>
+            </div>
+            <div>
+                <input type="file" id="edit-item-image" name="item-image" accept="image/*">
+            </div>
+            <button type="submit">Save Changes</button>
+        </form>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const product = products.find(p => p.id == id);
+                if (product) {
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('edit-item-name').value = product.name;
+                    document.getElementById('edit-item-brand').value = product.brand;
+                    document.getElementById('edit-item-price').value = product.price;
+                    document.getElementById('edit-item-weight').value = product.weight;
+                    document.getElementById('edit-item-quantity').value = product.quantity;
+                    document.getElementById('edit-item-store').value = product.store;
+                    document.getElementById('edit-item-category').value = product.category;
+                }
+            }
+        });
+
+        function saveProduct(event) {
+            event.preventDefault();
+            const id = document.getElementById('product-id').value;
+            const name = document.getElementById('edit-item-name').value;
+            const brand = document.getElementById('edit-item-brand').value;
+            const price = document.getElementById('edit-item-price').value;
+            const weight = document.getElementById('edit-item-weight').value;
+            const quantity = document.getElementById('edit-item-quantity').value;
+            const store = document.getElementById('edit-item-store').value;
+            const category = document.getElementById('edit-item-category').value;
+            const image = document.getElementById('edit-item-image').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const productIndex = products.findIndex(p => p.id == id);
+
+                if (productIndex > -1) {
+                    products[productIndex] = {
+                        id,
+                        name,
+                        brand,
+                        price,
+                        weight,
+                        quantity,
+                        store,
+                        category,
+                        image: image ? imageData : products[productIndex].image
+                    };
+                    localStorage.setItem('products', JSON.stringify(products));
+                    alert('Product updated successfully!');
+                    window.location.href = 'list.html';
+                }
+            };
+            if (image) {
+                reader.readAsDataURL(image);
+            } else {
+                reader.onload();
+            }
+        }
+    </script>
+</body>
+</html>

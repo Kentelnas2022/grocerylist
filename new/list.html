@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery List Dashboard</title>
+    <link rel="stylesheet" href="/new/styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grocery List</h1>
+        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="list.html">View Grocery</a></li>
+                <li><a href="add_product.html">Add Product</a></li>
+                <li><a href="reglog.html" onclick="closeMenu()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="category-filter">
+            <button onclick="filterProducts('')"><i class="fas fa-th"></i> All</button>
+            <button onclick="filterProducts('Fruits')"><i class="fas fa-apple-alt"></i> Fruits</button>
+            <button onclick="filterProducts('Vegetables')"><i class="fas fa-carrot"></i> Vegetables</button>
+            <button onclick="filterProducts('Canned goods')"><i class="fas fa-can"></i> Canned goods</button>
+            <button onclick="filterProducts('Crackers')"><i class="fas fa-cookie"></i> Crackers</button>
+            <input type="text" id="search-bar" placeholder="Search..." oninput="searchProducts()">
+        </section>
+        <section id="product-list">
+        </section>
+    </main>
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('show');
+        }
+
+        function filterProducts(category) {
+            const productList = document.getElementById('product-list');
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            
+            // Filter products by category
+            const filteredProducts = category ? products.filter(p => p.category === category) : products;
+
+            // Sort products: unchecked first, checked last
+            filteredProducts.sort((a, b) => a.checked - b.checked);
+
+            // Clear existing product list
+            productList.innerHTML = '';
+
+            // Display filtered and sorted products
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+                if (product.checked) productDiv.classList.add('checked');
+
+                const productImage = document.createElement('img');
+                productImage.src = product.image;
+                productImage.alt = product.name;
+
+                const productName = document.createElement('h3');
+                productName.textContent = product.name;
+
+                const productBrand = document.createElement('p');
+                productBrand.textContent = `Brand: ${product.brand}`;
+
+                const productPrice = document.createElement('p');
+                productPrice.textContent = `Price: ₱${product.price}`;
+
+                const productWeight = document.createElement('p');
+                productWeight.textContent = `Weight/Volume: ${product.weight}`;
+
+                const productQuantity = document.createElement('p');
+                productQuantity.textContent = `Quantity: ${product.quantity}`;
+
+                const productStore = document.createElement('p');
+                productStore.textContent = `Store: ${product.store}`;
+
+                const productCategory = document.createElement('p');
+                productCategory.textContent = `Category: ${product.category}`;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = product.checked || false;
+                checkbox.onchange = () => updateProductStatus(product.id, checkbox.checked);
+
+                productDiv.appendChild(checkbox);
+                productDiv.appendChild(productImage);
+                productDiv.appendChild(productName);
+                productDiv.appendChild(productBrand);
+                productDiv.appendChild(productPrice);
+                productDiv.appendChild(productWeight);
+                productDiv.appendChild(productQuantity);
+                productDiv.appendChild(productStore);
+                productDiv.appendChild(productCategory);
+
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function updateProductStatus(id, checked) {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const productIndex = products.findIndex(p => p.id === id);
+
+            if (productIndex > -1) {
+                products[productIndex].checked = checked;
+                localStorage.setItem('products', JSON.stringify(products));
+                filterProducts(document.querySelector('#category-filter .active')?.dataset?.category || '');
+            }
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const productList = document.getElementById('product-list');
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+
+            // Filter products based on search term
+            const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+
+            // Sort products: unchecked first, checked last
+            filteredProducts.sort((a, b) => a.checked - b.checked);
+
+            // Clear existing product list
+            productList.innerHTML = '';
+
+            // Display filtered and sorted products
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+                if (product.checked) productDiv.classList.add('checked');
+
+                const productImage = document.createElement('img');
+                productImage.src = product.image;
+                productImage.alt = product.name;
+
+                const productName = document.createElement('h3');
+                productName.textContent = product.name;
+
+                const productBrand = document.createElement('p');
+                productBrand.textContent = `Brand: ${product.brand}`;
+
+                const productPrice = document.createElement('p');
+                productPrice.textContent = `Price: ₱${product.price}`;
+
+                const productWeight = document.createElement('p');
+                productWeight.textContent = `Weight/Volume: ${product.weight}`;
+
+                const productQuantity = document.createElement('p');
+                productQuantity.textContent = `Quantity: ${product.quantity}`;
+
+                const productStore = document.createElement('p');
+                productStore.textContent = `Store: ${product.store}`;
+
+                const productCategory = document.createElement('p');
+                productCategory.textContent = `Category: ${product.category}`;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = product.checked || false;
+                checkbox.onchange = () => updateProductStatus(product.id, checkbox.checked);
+
+                productDiv.appendChild(checkbox);
+                productDiv.appendChild(productImage);
+                productDiv.appendChild(productName);
+                productDiv.appendChild(productBrand);
+                productDiv.appendChild(productPrice);
+                productDiv.appendChild(productWeight);
+                productDiv.appendChild(productQuantity);
+                productDiv.appendChild(productStore);
+                productDiv.appendChild(productCategory);
+
+                productList.appendChild(productDiv);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            filterProducts(''); // Load all products initially
+        });
+    </script>
+</body>
+</html>
